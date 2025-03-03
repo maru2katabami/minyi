@@ -1,14 +1,17 @@
 "use client"
 
 import { useRef, useEffect } from "react"
+import { zusCursor } from "@/lib/zustand"
 
 export const Cursor = () => {
   const canvasRef = useRef(null)
+  const { TEXTURE_DOWNSAMPLE, DENSITY_DISSIPATION, VELOCITY_DISSIPATION, PRESSURE_DISSIPATION, PRESSURE_ITERATIONS, CURL, SPLAT_RADIUS } = zusCursor()
   useEffect(() => {
     if (!canvasRef.current) return
     const canvas = canvasRef.current
-    canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight
-    const config = { TEXTURE_DOWNSAMPLE: 1, DENSITY_DISSIPATION: 0.95, VELOCITY_DISSIPATION: 0.99, PRESSURE_DISSIPATION: 0.8, PRESSURE_ITERATIONS: 25, CURL: 30, SPLAT_RADIUS: 0.001 }
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = canvas.clientWidth * dpr;
+    canvas.height = canvas.clientHeight * dpr;
     const supportRenderTextureFormat = (gl, internalFormat, format, type) => {
       const tex = gl.createTexture()
       gl.bindTexture(gl.TEXTURE_2D, tex)
@@ -142,8 +145,8 @@ export const Cursor = () => {
     `)
     let textureWidth, textureHeight, density, velocity, divergence, curl, pressure
     const initFramebuffers = () => {
-      textureWidth = gl.drawingBufferWidth >> config.TEXTURE_DOWNSAMPLE
-      textureHeight = gl.drawingBufferHeight >> config.TEXTURE_DOWNSAMPLE
+      textureWidth = gl.drawingBufferWidth >> TEXTURE_DOWNSAMPLE
+      textureHeight = gl.drawingBufferHeight >> TEXTURE_DOWNSAMPLE
       const texType = ext.halfFloatTexType, rgba = ext.formatRGBA, rg = ext.formatRG, r = ext.formatR
       gl.clearColor(1, 1, 1, 1); density = createDoubleFBO(2, textureWidth, textureHeight, rgba.internalFormat, rgba.format, texType, ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST)
       gl.clearColor(0, 0, 0, 1); velocity = createDoubleFBO(0, textureWidth, textureHeight, rg.internalFormat, rg.format, texType, ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST)
@@ -192,7 +195,7 @@ export const Cursor = () => {
       gl.uniform1f(splatProgram.uniforms.aspectRatio, canvas.width / canvas.height)
       gl.uniform2f(splatProgram.uniforms.point, x / canvas.width, 1 - y / canvas.height)
       gl.uniform3f(splatProgram.uniforms.color, dx, -dy, 1.0)
-      gl.uniform1f(splatProgram.uniforms.radius, config.SPLAT_RADIUS)
+      gl.uniform1f(splatProgram.uniforms.radius, SPLAT_RADIUS)
       gl.uniform1i(splatProgram.uniforms.invert, 0)
       blit(velocity.write[1]); velocity.swap()
       gl.uniform1i(splatProgram.uniforms.uTarget, density.read[2])
@@ -212,14 +215,14 @@ export const Cursor = () => {
       gl.uniform1i(advectionProgram.uniforms.uVelocity, velocity.read[2])
       gl.uniform1i(advectionProgram.uniforms.uSource, velocity.read[2])
       gl.uniform1f(advectionProgram.uniforms.dt, dt)
-      gl.uniform1f(advectionProgram.uniforms.dissipation, config.VELOCITY_DISSIPATION)
+      gl.uniform1f(advectionProgram.uniforms.dissipation, VELOCITY_DISSIPATION)
       blit(velocity.write[1]); velocity.swap()
       advectionDensityProgram.bind()
       gl.uniform2f(advectionDensityProgram.uniforms.texelSize, 1 / textureWidth, 1 / textureHeight)
       gl.uniform1i(advectionDensityProgram.uniforms.uVelocity, velocity.read[2])
       gl.uniform1i(advectionDensityProgram.uniforms.uSource, density.read[2])
       gl.uniform1f(advectionDensityProgram.uniforms.dt, dt)
-      gl.uniform1f(advectionDensityProgram.uniforms.dissipation, config.DENSITY_DISSIPATION)
+      gl.uniform1f(advectionDensityProgram.uniforms.dissipation, DENSITY_DISSIPATION)
       blit(density.write[1]); density.swap()
       pointers.forEach(pointer => { if (pointer.moved) { splat(pointer.x, pointer.y, pointer.dx, pointer.dy, pointer.color); pointer.moved = false } })
       curlProgram.bind(); gl.uniform2f(curlProgram.uniforms.texelSize, 1 / textureWidth, 1 / textureHeight)
@@ -227,7 +230,7 @@ export const Cursor = () => {
       vorticityProgram.bind(); gl.uniform2f(vorticityProgram.uniforms.texelSize, 1 / textureWidth, 1 / textureHeight)
       gl.uniform1i(vorticityProgram.uniforms.uVelocity, velocity.read[2])
       gl.uniform1i(vorticityProgram.uniforms.uCurl, curl[2])
-      gl.uniform1f(vorticityProgram.uniforms.curl, config.CURL)
+      gl.uniform1f(vorticityProgram.uniforms.curl, CURL)
       gl.uniform1f(vorticityProgram.uniforms.dt, dt)
       blit(velocity.write[1]); velocity.swap()
       divergenceProgram.bind(); gl.uniform2f(divergenceProgram.uniforms.texelSize, 1 / textureWidth, 1 / textureHeight)
@@ -237,14 +240,14 @@ export const Cursor = () => {
       gl.activeTexture(gl.TEXTURE0 + pressureTexId)
       gl.bindTexture(gl.TEXTURE_2D, pressure.read[0])
       gl.uniform1i(clearProgram.uniforms.uTexture, pressureTexId)
-      gl.uniform1f(clearProgram.uniforms.value, config.PRESSURE_DISSIPATION)
+      gl.uniform1f(clearProgram.uniforms.value, PRESSURE_DISSIPATION)
       blit(pressure.write[1]); pressure.swap()
       pressureProgram.bind(); gl.uniform2f(pressureProgram.uniforms.texelSize, 1 / textureWidth, 1 / textureHeight)
       gl.uniform1i(pressureProgram.uniforms.uDivergence, divergence[2])
       pressureTexId = pressure.read[2]
       gl.uniform1i(pressureProgram.uniforms.uPressure, pressureTexId)
       gl.activeTexture(gl.TEXTURE0 + pressureTexId)
-      for (let i = 0; i < config.PRESSURE_ITERATIONS; i++) { gl.bindTexture(gl.TEXTURE_2D, pressure.read[0]); blit(pressure.write[1]); pressure.swap() }
+      for (let i = 0; i < PRESSURE_ITERATIONS; i++) { gl.bindTexture(gl.TEXTURE_2D, pressure.read[0]); blit(pressure.write[1]); pressure.swap() }
       gradienSubtractProgram.bind(); gl.uniform2f(gradienSubtractProgram.uniforms.texelSize, 1 / textureWidth, 1 / textureHeight)
       gl.uniform1i(gradienSubtractProgram.uniforms.uPressure, pressure.read[2])
       gl.uniform1i(gradienSubtractProgram.uniforms.uVelocity, velocity.read[2])
