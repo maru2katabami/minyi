@@ -7,9 +7,7 @@ export const Cursor = () => {
   useEffect(() => {
     if (!canvasRef.current) return
     const canvas = canvasRef.current
-    const dpr = window.devicePixelRatio * 2 || 1;
-    canvas.width = canvas.clientWidth * dpr;
-    canvas.height = canvas.clientHeight * dpr;
+    canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight
     const config = { TEXTURE_DOWNSAMPLE: 1, DENSITY_DISSIPATION: 0.95, VELOCITY_DISSIPATION: 0.99, PRESSURE_DISSIPATION: 0.8, PRESSURE_ITERATIONS: 25, CURL: 30, SPLAT_RADIUS: 0.001 }
     const supportRenderTextureFormat = (gl, internalFormat, format, type) => {
       const tex = gl.createTexture()
