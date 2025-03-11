@@ -15,10 +15,10 @@ export const Cursor = () => {
     const config = {
       TEXTURE_DOWNSAMPLE: 1,
       DENSITY_DISSIPATION: 0.95,
-      VELOCITY_DISSIPATION: 0.99,
+      VELOCITY_DISSIPATION: 0.95,
       PRESSURE_DISSIPATION: 0.99,
       PRESSURE_ITERATIONS: 99,
-      CURL: 9,
+      CURL: 0.9,
       SPLAT_RADIUS: 0.0009,
     };
 
