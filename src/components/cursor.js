@@ -22,7 +22,7 @@ export const Cursor = () => {
       DENSITY_DISSIPATION: 0.9,
       VELOCITY_DISSIPATION: 0.99,
       PRESSURE_DISSIPATION: 0.9,
-      PRESSURE_ITERATIONS: 99,
+      PRESSURE_ITERATIONS: 30,
       CURL: 9,
       SPLAT_RADIUS: 0.0009,
     }
