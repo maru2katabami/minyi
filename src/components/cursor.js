@@ -9,10 +9,9 @@ export const Cursor = () => {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const dpr = window.devicePixelRatio || 1;
-    // Canvasサイズの初期設定（devicePixelRatioを考慮）
-    canvas.width = canvas.clientWidth * dpr;
-    canvas.height = canvas.clientHeight * dpr;
+    // Canvasサイズの初期設定
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
 
     let animationFrameId
     let lastTime = Date.now()
