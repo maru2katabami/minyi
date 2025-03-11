@@ -594,22 +594,26 @@ export const Cursor = () => {
       }
     }
 
-    // ポインターイベントのハンドラ
     const pointerDownHandler = (e) => {
       e.preventDefault();
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
       let pointer = pointers.find(p => p.id === e.pointerId);
       if (!pointer) {
         pointer = new Pointer(e.pointerId);
         pointers.push(pointer);
       }
       pointer.down = true;
-      pointer.x = e.offsetX;
-      pointer.y = e.offsetY;
-      // ここでは色は固定パレットを使うので設定不要
+      pointer.x = x;
+      pointer.y = y;
     };
-
+    
     const pointerMoveHandler = (e) => {
       e.preventDefault();
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
       let pointer = pointers.find(p => p.id === e.pointerId);
       if (!pointer) {
         pointer = new Pointer(e.pointerId);
@@ -617,12 +621,13 @@ export const Cursor = () => {
       }
       if (pointer.down) {
         pointer.moved = true;
-        pointer.dx = (e.offsetX - pointer.x) * 10.0;
-        pointer.dy = (e.offsetY - pointer.y) * 10.0;
+        pointer.dx = (x - pointer.x) * 10.0;
+        pointer.dy = (y - pointer.y) * 10.0;
       }
-      pointer.x = e.offsetX;
-      pointer.y = e.offsetY;
+      pointer.x = x;
+      pointer.y = y;
     };
+    
 
     const pointerUpHandler = (e) => {
       e.preventDefault();
