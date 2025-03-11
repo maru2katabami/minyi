@@ -9,9 +9,10 @@ export const Cursor = () => {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    // Canvasサイズの初期設定
-    canvas.width = canvas.clientWidth
-    canvas.height = canvas.clientHeight
+    const dpr = window.devicePixelRatio || 1;
+    // Canvasサイズの初期設定（devicePixelRatioを考慮）
+    canvas.width = canvas.clientWidth * dpr;
+    canvas.height = canvas.clientHeight * dpr;
 
     let animationFrameId
     let lastTime = Date.now()
@@ -22,7 +23,7 @@ export const Cursor = () => {
       DENSITY_DISSIPATION: 0.9,
       VELOCITY_DISSIPATION: 0.99,
       PRESSURE_DISSIPATION: 0.9,
-      PRESSURE_ITERATIONS: 9,
+      PRESSURE_ITERATIONS: 99,
       CURL: 9,
       SPLAT_RADIUS: 0.0009,
     }
