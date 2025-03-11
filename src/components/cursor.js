@@ -16,22 +16,21 @@ export const Cursor = () => {
       TEXTURE_DOWNSAMPLE: 1,
       DENSITY_DISSIPATION: 0.95,
       VELOCITY_DISSIPATION: 0.99,
-      PRESSURE_DISSIPATION: 0.9,
-      PRESSURE_ITERATIONS: 50,
-      CURL: 30,
-      SPLAT_RADIUS: 0.0003,
+      PRESSURE_DISSIPATION: 0.99,
+      PRESSURE_ITERATIONS: 99,
+      CURL: 9,
+      SPLAT_RADIUS: 0.0009,
     };
 
-    // 固定の油彩 (oil slick) 7色パレット（例）
+    // 固定の油彩 (oil slick) 6色パレット（例）
     const oilSlickColors = [
-      [0.1, 0.4, 0.9],  // 青み
-      [0.9, 0.4, 0.1],  // オレンジ
-      [0.9, 0.9, 0.1],  // イエロー
-      [0.1, 0.9, 0.9],  // シアン
-      [0.1, 0.9, 0.1],  // 緑
-      [0.9, 0.1, 0.9],  // マゼンタ
-      [0.9, 0.1, 0.1],  // 赤
-    ];
+      [0.1, 0.0, 0.0],
+      [1.0, 1.0, 0.0],
+      [0.0, 1.0, 0.0],
+      [0.0, 1.0, 1.0],
+      [0.0, 0.0, 1.0],
+      [1.0, 0.0, 1.0],
+    ]
 
     // ポインター情報は id ごとに管理する
     const pointers = [];
@@ -568,14 +567,13 @@ export const Cursor = () => {
       splatVelocity(x, y, dx, dy);
       // 各色ごとに小さなオフセットをつけて密度スプラット
       const offsetRadius = 20; // オフセット量（必要に応じて調整）
-      for (let i = 0; i < oilSlickColors.length; i++) {
+      for (let i in oilSlickColors) {
         const angle = (i / oilSlickColors.length) * Math.PI * 2;
         const offsetX = Math.cos(angle) * offsetRadius;
         const offsetY = Math.sin(angle) * offsetRadius;
         splatDensity(x + offsetX, y + offsetY, oilSlickColors[i]);
       }
     }
-    // --- ここまで ---
 
     // 複数スプラットの実行（固定パレットを使用）
     function multipleSplats(amount) {
