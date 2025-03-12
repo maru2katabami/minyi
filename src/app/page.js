@@ -1,11 +1,12 @@
 import { Cursor } from "@/components/cursor"
-import { ToolBox } from "@/components/toolbox"
+import { Content } from "@/components/content"
 
 export default function Page() {
   return (
     <main>
       <Cursor/>
-      <ToolBox/>
+      <Content>
+      </Content>
     </main>
   )
 }

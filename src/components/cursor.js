@@ -20,16 +20,17 @@ export const Cursor = () => {
       PRESSURE_ITERATIONS: 99,
       CURL: 0.9,
       SPLAT_RADIUS: 0.0009,
+      OPACITY: 0.03
     };
 
     // 固定の油彩 (oil slick) 6色パレット（例）
     const oilSlickColors = [
-      [0.1, 0.0, 0.0],
-      [1.0, 1.0, 0.0],
-      [0.0, 1.0, 0.0],
-      [0.0, 1.0, 1.0],
+      [0.5, 0.0, 0.5],
       [0.0, 0.0, 1.0],
-      [1.0, 0.0, 1.0],
+      [0.0, 1.0, 0.0],
+      [1.0, 1.0, 0.0],
+      [1.0, 0.5, 0.0],
+      [1.0, 0.0, 0.0]
     ];
 
     // ポインター情報は id ごとに管理する
@@ -559,7 +560,7 @@ export const Cursor = () => {
       gl.uniform1i(splatProgram.uniforms.uTarget, density.read[2]);
       gl.uniform2f(splatProgram.uniforms.point, x / canvas.width, 1 - y / canvas.height);
       // 変更：白背景から引く形にするため、色を反転
-      gl.uniform3f(splatProgram.uniforms.color, -color[0] * 0.3, -color[1] * 0.3, -color[2] * 0.3);
+      gl.uniform3f(splatProgram.uniforms.color, -color[0] * config.OPACITY, -color[1] * config.OPACITY, -color[2] * config.OPACITY);
       gl.uniform1f(splatProgram.uniforms.radius, config.SPLAT_RADIUS);
       blit(density.write[1]);
       density.swap();
@@ -657,8 +658,6 @@ export const Cursor = () => {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute top-0 size-full"/>
+    <canvas ref={canvasRef} className="absolute top-0 size-full"/>
   )
 };

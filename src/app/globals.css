@@ -7,3 +7,9 @@
 html, body, main {
   @apply relative size-full
 }
+
+.grid-line {
+  background-image:
+   repeating-linear-gradient( 0deg, #dddddd22, #dddddd22 2px, #99bbff22 2px, #99bbff22 50px),
+   repeating-linear-gradient( 90deg, #dddddd22, #dddddd22 2px, #99bbff22 2px, #99bbff22 50px);
+}
