@@ -30,7 +30,7 @@ export const Cursor = () => {
       [0.0, 1.0, 1.0],
       [0.0, 0.0, 1.0],
       [1.0, 0.0, 1.0],
-    ]
+    ];
 
     // ポインター情報は id ごとに管理する
     const pointers = [];
@@ -54,8 +54,8 @@ export const Cursor = () => {
         halfFloat = gl.getExtension("OES_texture_half_float");
         supportLinearFiltering = gl.getExtension("OES_texture_half_float_linear");
       }
-
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      // 変更：初期クリアカラーを白に設定
+      gl.clearColor(1.0, 1.0, 1.0, 1.0);
       const halfFloatTexType = isWebGL2 ? gl.HALF_FLOAT : halfFloat.HALF_FLOAT_OES;
       let formatRGBA, formatRG, formatR;
       if (isWebGL2) {
@@ -204,6 +204,7 @@ export const Cursor = () => {
       }
     `);
 
+    // --- アドベクションシェーダーを白に収束するよう修正 ---
     const advectionManualFilteringShader = compileShader(gl.FRAGMENT_SHADER, `
       precision highp float;
       precision mediump sampler2D;
@@ -227,7 +228,8 @@ export const Cursor = () => {
       }
       void main () {
           vec2 coord = gl_FragCoord.xy - dt * texture2D(uVelocity, vUv).xy;
-          gl_FragColor = dissipation * bilerp(uSource, coord);
+          // 変更：白へ補間する項を追加
+          gl_FragColor = dissipation * bilerp(uSource, coord) + (1.0 - dissipation) * vec4(1.0);
           gl_FragColor.a = 1.0;
       }
     `);
@@ -243,7 +245,8 @@ export const Cursor = () => {
       uniform float dissipation;
       void main () {
           vec2 coord = vUv - dt * texture2D(uVelocity, vUv).xy * texelSize;
-          gl_FragColor = dissipation * texture2D(uSource, coord);
+          // 変更：白へ補間する項を追加
+          gl_FragColor = dissipation * texture2D(uSource, coord) + (1.0 - dissipation) * vec4(1.0);
           gl_FragColor.a = 1.0;
       }
     `);
@@ -555,7 +558,8 @@ export const Cursor = () => {
       splatProgram.bind();
       gl.uniform1i(splatProgram.uniforms.uTarget, density.read[2]);
       gl.uniform2f(splatProgram.uniforms.point, x / canvas.width, 1 - y / canvas.height);
-      gl.uniform3f(splatProgram.uniforms.color, color[0] * 0.3, color[1] * 0.3, color[2] * 0.3);
+      // 変更：白背景から引く形にするため、色を反転
+      gl.uniform3f(splatProgram.uniforms.color, -color[0] * 0.3, -color[1] * 0.3, -color[2] * 0.3);
       gl.uniform1f(splatProgram.uniforms.radius, config.SPLAT_RADIUS);
       blit(density.write[1]);
       density.swap();
@@ -633,19 +637,12 @@ export const Cursor = () => {
       e.preventDefault();
       let pointer = pointers.find(p => p.id === e.pointerId);
       if (pointer) pointer.down = false;
-    };
-
-    const pointerCancelHandler = (e) => {
-      e.preventDefault();
-      let pointer = pointers.find(p => p.id === e.pointerId);
-      if (pointer) pointer.down = false;
-    };
+    }
 
     // イベントリスナーの登録（ポインターイベントのみ）
     window.addEventListener("pointerdown", pointerDownHandler);
     window.addEventListener("pointermove", pointerMoveHandler);
     window.addEventListener("pointerup", pointerUpHandler);
-    window.addEventListener("pointercancel", pointerCancelHandler);
 
     // アニメーション開始
     update();
@@ -656,9 +653,12 @@ export const Cursor = () => {
       window.removeEventListener("pointerdown", pointerDownHandler);
       window.removeEventListener("pointermove", pointerMoveHandler);
       window.removeEventListener("pointerup", pointerUpHandler);
-      window.removeEventListener("pointercancel", pointerCancelHandler);
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="absolute top-0 size-full"/>;
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute top-0 size-full"/>
+  )
 };

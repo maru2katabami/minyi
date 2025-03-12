@@ -1,14 +1,19 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 
 export const ToolBox = () => {
 
-  const toolBoxRef = useRef(null)
+  const [isOpen, setIsOpen] = useState(false)
+
+  const handleClick = (e) => {    
+    setIsOpen(e.target.id === "close" ? false: true)
+  }
 
   return (
-    <div ref={toolBoxRef} className="absolute top-5 right-5 size-20 rounded-3xl bg-white">
-      <canvas/>
+    <div className={`absolute top-5 right-5 ${isOpen ? "size-80": "size-20"} rounded-xl shadow-xl duration-500`} onClick={handleClick}>
+      <canvas className="size-full"/>
+      <div className={`absolute top-2 right-2 size-10 rounded-3xl bg-black ${isOpen ? "block": "hidden"}`} id="close"/>
     </div>
   )
 }
