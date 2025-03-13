@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 * {
-  @apply outline-0 border-0 touch-none select-none;
+  @apply outline-0 border-0 select-none;
 }
 
 html, body, main {
