@@ -20,7 +20,7 @@ export const Cursor = () => {
       PRESSURE_ITERATIONS: 99,
       CURL: 0.9,
       SPLAT_RADIUS: 0.0009,
-      OPACITY: 0.03
+      OPACITY: 0.05
     };
 
     // 固定の油彩 (oil slick) 6色パレット（例）

@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 * {
-  @apply outline-0 border-0 touch-none select-none overflow-hidden;
+  @apply outline-0 border-0 touch-none select-none;
 }
 
 html, body, main {
-  @apply relative size-full
+  @apply relative size-full overflow-hidden;
 }
 
 .grid-line {

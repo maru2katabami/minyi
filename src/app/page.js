@@ -5,8 +5,7 @@ export default function Page() {
   return (
     <main>
       <Cursor/>
-      <Content>
-      </Content>
+      <Content/>
     </main>
   )
 }
