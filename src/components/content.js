@@ -1,11 +1,10 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState, useCallback } from "react"
+import { useLayoutEffect, useEffect, useRef, useState, useCallback } from "react";
 
-const ITEM_WIDTH = 369
-const MAX_SPACE = 30
+const ITEM_WIDTH = 369;
+const MAX_SPACE = 30;
 
-// 複製する項目群を独立したコンポーネントに
 const Items = () => (
   <>
     <div className="w-[369px] h-52 rounded-2xl bg-black shrink-0" />
@@ -18,125 +17,112 @@ const Items = () => (
     />
     <div className="w-[369px] h-52 rounded-2xl bg-black shrink-0" />
   </>
-)
+);
 
 export const Content = () => {
-  const headerRef = useRef(null)
-  const scrollTimeout = useRef(null)
-  const [space, setSpace] = useState(0)
+  const headerRef = useRef(null);
+  const scrollTimeout = useRef(null);
+  const [space, setSpace] = useState(0);
 
-  // space の計算とウィンドウリサイズ時の更新
+  // リサイズ時に余白(space)を更新（debounce 化）
   useEffect(() => {
     const calcSpace = () => {
-      setSpace(Math.min(window.innerWidth % ITEM_WIDTH, MAX_SPACE))
-    }
-    calcSpace()
-    window.addEventListener("resize", calcSpace)
-    return () => window.removeEventListener("resize", calcSpace)
-  }, [])
+      setSpace(Math.min(window.innerWidth % ITEM_WIDTH, MAX_SPACE));
+    };
+    calcSpace();
+    let resizeTimer;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(calcSpace, 100);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      clearTimeout(resizeTimer);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
-  // 初期スクロール位置の設定
-  useEffect(() => {
-    const container = headerRef.current
+  // 初期スクロール位置の設定（useLayoutEffect でちらつきを防止）
+  useLayoutEffect(() => {
+    const container = headerRef.current;
     if (container) {
-      const oneSetWidth = container.scrollWidth / 2
-      container.scrollLeft = oneSetWidth
+      container.scrollLeft = container.scrollWidth / 2;
     }
-  }, [space])
+  }, [space]);
 
-  // 一セット分の幅を取得するヘルパー関数
-  const getOneSetWidth = () => {
-    const container = headerRef.current
-    return container ? container.scrollWidth / 2 : 0
-  }
+  // 一セット分の幅を取得
+  const getOneSetWidth = useCallback(() => {
+    const container = headerRef.current;
+    return container ? container.scrollWidth / 2 : 0;
+  }, []);
 
-  // スクロール終了後に中央に最も近いアイテムへスナップする関数
-  const handleSnapToCenter = useCallback(() => {
-    const container = headerRef.current
-    if (!container) return
+  // 中央に最も近いアイテムへスナップする関数
+  const snapToCenter = useCallback(() => {
+    const container = headerRef.current;
+    if (!container) return;
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
+    let closestScroll = null;
+    let minDistance = Infinity;
 
-    const center = container.scrollLeft + container.clientWidth / 2
-    let closestTarget = null
-    let minDistance = Infinity
-
-    // container.children には複製されたアイテム群が含まれる
-    Array.from(container.children).forEach((child) => {
-      const childCenter = child.offsetLeft + child.offsetWidth / 2
-      const distance = Math.abs(center - childCenter)
+    Array.from(container.children).forEach(child => {
+      const childCenter = child.offsetLeft + child.offsetWidth / 2;
+      const distance = Math.abs(containerCenter - childCenter);
       if (distance < minDistance) {
-        minDistance = distance
-        // 子要素の中央をコンテナ中央に合わせるためのスクロール位置
-        closestTarget = childCenter - container.clientWidth / 2
+        minDistance = distance;
+        closestScroll = childCenter - container.clientWidth / 2;
       }
-    })
+    });
 
-    if (closestTarget !== null) {
-      container.scrollTo({
-        left: closestTarget,
-        behavior: "smooth",
-      })
+    if (closestScroll !== null) {
+      container.scrollTo({ left: closestScroll, behavior: "smooth" });
     }
-  }, [])
+  }, []);
 
-  // 無限スクロール用ハンドラにスナップ機能を追加
+  // スクロールイベント処理（無限スクロール＋スナップ機能）
   const handleScroll = useCallback(() => {
-    const container = headerRef.current
-    if (!container) return
-
-    const oneSetWidth = getOneSetWidth()
+    const container = headerRef.current;
+    if (!container) return;
+    const oneSetWidth = getOneSetWidth();
     if (container.scrollLeft <= 0) {
-      container.scrollLeft += oneSetWidth
+      container.scrollLeft += oneSetWidth;
     } else if (container.scrollLeft >= container.scrollWidth - container.clientWidth) {
-      container.scrollLeft -= oneSetWidth
+      container.scrollLeft -= oneSetWidth;
     }
+    if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+    scrollTimeout.current = setTimeout(snapToCenter, 150);
+  }, [getOneSetWidth, snapToCenter]);
 
-    // スクロール中はタイマーをクリアし、スクロール終了後にhandleSnapToCenterを実行
-    if (scrollTimeout.current) {
-      clearTimeout(scrollTimeout.current)
-    }
-    scrollTimeout.current = setTimeout(() => {
-      handleSnapToCenter()
-    }, 150)
-  }, [handleSnapToCenter])
-
-  // クリーンアップ用のエフェクト
+  // クリーンアップ
   useEffect(() => {
     return () => {
-      if (scrollTimeout.current) {
-        clearTimeout(scrollTimeout.current)
-      }
-    }
-  }, [])
+      if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+    };
+  }, []);
 
-  // クリック時に、現在のスクロール位置に最も近いiframeへスムーズスクロール
+  // クリック時に最も近い iframe へスムーズスクロール
   const handleYoutubeScroll = useCallback(() => {
-    const container = headerRef.current
-    if (!container) return
+    const container = headerRef.current;
+    if (!container) return;
+    const iframes = container.querySelectorAll("iframe");
+    if (!iframes.length) return;
 
-    const iframes = container.querySelectorAll("iframe")
-    if (iframes.length === 0) return
+    let closestTarget = null;
+    let minDistance = Infinity;
+    const currentScroll = container.scrollLeft;
 
-    let closestTarget = null
-    let minDistance = Infinity
-    const currentScroll = container.scrollLeft
-
-    iframes.forEach((iframe) => {
-      const targetScroll =
-        iframe.offsetLeft - (container.clientWidth - iframe.clientWidth) / 2
-      const distance = Math.abs(currentScroll - targetScroll)
+    iframes.forEach(iframe => {
+      const targetScroll = iframe.offsetLeft - (container.clientWidth - iframe.clientWidth) / 2;
+      const distance = Math.abs(currentScroll - targetScroll);
       if (distance < minDistance) {
-        minDistance = distance
-        closestTarget = targetScroll
+        minDistance = distance;
+        closestTarget = targetScroll;
       }
-    })
+    });
 
     if (closestTarget !== null) {
-      container.scrollTo({
-        left: closestTarget,
-        behavior: "smooth",
-      })
+      container.scrollTo({ left: closestTarget, behavior: "smooth" });
     }
-  }, [])
+  }, []);
 
   return (
     <div className="absolute top-0 size-full grid-line flex flex-wrap justify-between overflow-hidden">
@@ -150,16 +136,13 @@ export const Content = () => {
           gap: `${space}px`,
         }}
       >
-        {/* 内容を複製して無限スクロールを実現 */}
+        {/* コンテンツを複製して無限スクロールを実現 */}
         <Items />
         <Items />
       </div>
-      <div
-        className="relative w-full h-[calc(100%-224px)]"
-        onClick={handleYoutubeScroll}
-      >
+      <div className="relative w-full h-[calc(100%-224px)]" onClick={handleYoutubeScroll}>
         {/* 他のコンテンツ */}
       </div>
     </div>
-  )
-}
+  );
+};
