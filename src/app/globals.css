@@ -1,11 +1,21 @@
 @import "tailwindcss";
 
 * {
-  @apply outline-0 border-0 touch-none select-none;
+  @apply outline-0 border-0 select-none;
 }
 
 html, body, main {
   @apply relative size-full overflow-hidden;
+}
+
+.scroll-none {
+  overflow: scroll;
+  -ms-overflow-style: none;    /* IE, Edge 対応 */
+  scrollbar-width: none; 
+}
+
+.scroll-none::-webkit-scrollbar {  /* Chrome, Safari 対応 */
+  display:none;
 }
 
 .grid-line {
