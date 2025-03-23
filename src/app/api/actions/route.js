@@ -26,7 +26,7 @@ export async function POST(request) {
             JSON.stringify({
               title: "Test Notification",
               body: message,
-              icon: "/icon512_maskable.png",
+              icon: "/minyi.png",
             })
           )
           return NextResponse.json({ success: true })

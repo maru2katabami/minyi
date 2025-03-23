@@ -11,7 +11,6 @@ export default function manifest() {
     lang:"ja",
     icons:[
       {
-        purpose:"maskable",
         sizes:"512x512",
         src:"minyi.png",
         type:"image/png"
