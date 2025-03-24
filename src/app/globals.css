@@ -6,4 +6,5 @@
 
 html, body, main {
   @apply relative size-full;
+  padding-top: calc(env(safe-area-inset-top));
 }
