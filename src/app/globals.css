@@ -6,4 +6,5 @@
 
 html, body, main {
   @apply relative size-full overflow-hidden;
+  padding-top: env(safe-area-inset-top);
 }
