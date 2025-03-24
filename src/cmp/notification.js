@@ -11,7 +11,7 @@ function b64ToUint8(str) {
   return arr
 }
 
-export const PushNotif = () => {
+export function Notification() {
   const [isSpported, setIsSupported] = useState(false)
   const [subscription, setSubscription] = useState(null)
 
