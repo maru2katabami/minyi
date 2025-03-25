@@ -4,14 +4,12 @@
   @apply touch-none select-none;
 }
 
-body {
-  padding-top: env(safe-area-inset-top);
-  padding-right: env(safe-area-inset-right);
-  padding-bottom:  env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  margin: 0;
+html, body, main {
+  @apply relative size-full overflow-hidden;
 }
 
 main {
-  @apply relative size-full;
+  background-position: center center;
+  background-image: linear-gradient(#eee 1px, transparent 1px), linear-gradient(90deg, #eee 1px, transparent 1px);
+  background-size: 3em 3em;
 }

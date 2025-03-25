@@ -70,9 +70,14 @@ export function Notification() {
   if (!isSpported) return
 
   return (
-      // 実装のonClickは sendTest❌ unsubscribe⭕️
-      <div onClick={() => subscription ? sendTest(): subscribe()}>
+    <div className="p-1 w-20 h-8 bg-indigo-100 rounded-3xl flex justify-between items-center">
+      {/* 実装のonClickは sendTest❌ unsubscribe⭕️ */}
+      <div className="size-6 rounded-3xl bg-indigo-400 shadow-inner shadow-black flex justify-center items-center" onClick={() => subscription ? sendTest(): subscribe()}>
         {subscription ? "🔔": "🔕"}
       </div>
+      <div className="flex-1 text-center text-sm text-indigo-400 font-bold">
+        {subscription ? "ON": "OFF"}
+      </div>
+    </div>
   )
 }
