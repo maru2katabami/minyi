@@ -3,7 +3,7 @@ import { Notification } from "@/cmp/notification"
 
 export default function Page() {
   return (
-    <main>
+    <main className="p-safe">
       <MiniPlay>
         <Notification/>
       </MiniPlay>

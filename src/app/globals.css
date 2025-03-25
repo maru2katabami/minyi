@@ -1,26 +1,20 @@
 @import "tailwindcss";
 
-/* セーフエリア対応 */
-@supports (padding-top: constant(safe-area-inset-top)) {
-  body {
-    padding: constant(safe-area-inset-top)
-             constant(safe-area-inset-right)
-             constant(safe-area-inset-bottom)
-             constant(safe-area-inset-left);
-  }
+* {
+  @apply touch-none select-none;
 }
 
-@supports (padding-top: env(safe-area-inset-top)) {
-  body {
-    padding: env(safe-area-inset-top)
-             env(safe-area-inset-right)
-             env(safe-area-inset-bottom)
-             env(safe-area-inset-left);
-  }
-}
-
-/* 一括でhtml, body, mainの共通スタイル */
 html, body, main {
-  @apply relative size-full; /* Tailwind的にサイズを統一 */
-  margin: 0;
+  @apply relative size-full overflow-hidden;
+}
+
+.p-safe {
+  padding-top: constant(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top);
+  padding-left: constant(safe-area-inset-left);
+  padding-left: env(safe-area-inset-left);
+  padding-right: constant(safe-area-inset-right);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
 }
