@@ -48,6 +48,16 @@ export function MiniPlay({children}) {
     ref.current.style.borderRadius = "10px"
   }, [])
 
+  const [safeArea, setSafeArea] = useState(0);
+  useEffect(() => {
+		// mount後でないと`getComputedStyle`がundefinedになってしまうのでuseEffect内で実行する
+    setSafeArea(
+      parseInt(
+        getComputedStyle(document.body).getPropertyValue('padding-top'),
+      ),
+    );
+  }, []);
+
   return (
     <div ref={ref} className="overflow-hidden" onPointerDown={handleDown} onPointerMove={handleMove} onPointerUp={handleUp}>
       {isOpen ?
@@ -58,7 +68,8 @@ export function MiniPlay({children}) {
           <div className="size-3 border border-green-500 bg-green-400 rounded-xl"/>
         </div>
         {children}
-        <iframe className="w-full h-fit" src="https://www.youtube.com/embed/hTQw6RcHvGs?si=1wI5qR7DpdBLLJNM"/>
+        {safeArea}
+        {/* <iframe className="w-full h-fit" src="https://www.youtube.com/embed/hTQw6RcHvGs?si=1wI5qR7DpdBLLJNM"/> */}
       </div>:
       <div id="open" className="size-full bg-[url(/minyi.png)] bg-no-repeat bg-center bg-[size:40px]" onClick={handleClick}/>
       }
