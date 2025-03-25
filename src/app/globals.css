@@ -1,10 +1,16 @@
 @import "tailwindcss";
-
+@supports (padding-top: constant(safe-area-inset-top)) {
+  body {
+    padding: env(safe-area-inset-top)
+             env(safe-area-inset-right)
+             env(safe-area-inset-bottom)
+             env(safe-area-inset-left);
+  }
+}
 * {
   @apply touch-none select-none;
 }
 
 html, body, main {
   @apply relative size-full;
-  padding-top: calc(env(safe-area-inset-top));
 }
