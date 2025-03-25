@@ -4,11 +4,14 @@
   @apply touch-none select-none;
 }
 
-html, body, main {
-  @apply relative size-full overflow-hidden;
+body {
   padding-top: env(safe-area-inset-top);
   padding-right: env(safe-area-inset-right);
   padding-bottom:  env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
   margin: 0;
+}
+
+main {
+  @apply relative size-full;
 }
