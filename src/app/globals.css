@@ -5,7 +5,7 @@
 }
 
 html, body, main {
-  @apply relative size- overflow-hidden;
+  @apply relative size-full overflow-hidden;
   padding-top: calc(env(safe-area-inset-top) + 1rem);
   padding-right: calc(env(safe-area-inset-right) + 1rem);
   padding-bottom: 1rem;
