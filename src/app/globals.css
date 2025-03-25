@@ -6,9 +6,9 @@
 
 html, body, main {
   @apply relative size-full overflow-hidden;
-  padding-top: calc(env(safe-area-inset-top) + 1rem);
-  padding-right: calc(env(safe-area-inset-right) + 1rem);
-  padding-bottom: 1rem;
-  padding-left: calc(env(safe-area-inset-left) + 1rem);
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom:  env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
   margin: 0;
 }
