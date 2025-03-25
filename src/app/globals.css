@@ -21,6 +21,6 @@
 
 /* 一括でhtml, body, mainの共通スタイル */
 html, body, main {
-  @apply relative w-full h-full; /* Tailwind的にサイズを統一 */
+  @apply relative size-full; /* Tailwind的にサイズを統一 */
   margin: 0;
 }
