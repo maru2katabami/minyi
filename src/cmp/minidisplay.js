@@ -28,7 +28,7 @@ export function MiniDisPlay({children}) {
     const rect = current.getBoundingClientRect()
     const { innerHeight, innerWidth } = window   
     const isOverlapping = rect.top < 20 || rect.bottom > innerHeight - 20 || rect.left < 20 || rect.right > innerWidth - 20
-    
+
     if (rect.top < 20) {
       current.style.top = "20px"
     } else if (rect.bottom > innerHeight - 20) {
@@ -65,7 +65,7 @@ export function MiniDisPlay({children}) {
   return (
     <div
       ref={ref}
-      className="size-auto bg-white border border-dashed rounded-3xl flex flex-wrap justify-around overflow-visible"
+      className="bg-white border border-dashed rounded-3xl flex flex-wrap justify-around overflow-visible"
       onPointerDown={handleDown}
       onPointerMove={handleMove}
       onPointerUp={handleUp}>
@@ -77,7 +77,7 @@ export function MiniDisPlay({children}) {
           onClick={handleClick}/>
       </>:
       <div
-        className="m-1 size-8 bg-[url(/minyi.png)] bg-no-repeat bg-center bg-[size:80%]"
+        className="m-2 size-8 bg-[url(/minyi.png)] bg-no-repeat bg-center bg-[size:100%]"
         onClick={handleClick}/>
       }
     </div>
