@@ -13,7 +13,7 @@ function b64ToUint8(str) {
 
 export function Notification() {
   const [isSpported, setIsSupported] = useState(false)
-  const [subscription, setSubscription] = useState(null)
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     if ("serviceWorker" in navigator && "PushManager" in window) {
@@ -27,8 +27,8 @@ export function Notification() {
       scope: "/",
       updateViaCache: "none",
     })
-    const sub = await reg.pushManager.getSubscription()
-    setSubscription(sub)
+    const subscription = await reg.pushManager.getSubscription()
+    setNotification(subscription)
   }
 
   async function subscribe() {
@@ -37,18 +37,18 @@ export function Notification() {
       userVisibleOnly: true,
       applicationServerKey: b64ToUint8(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY),
     })
-    setSubscription(newSub)
+    setNotification(newSub)
     const subJson = JSON.parse(JSON.stringify(newSub))
     await fetch("/api/actions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "subscribe", subscription: subJson }),
+      body: JSON.stringify({ action: "subscribe", notification: subJson }),
     })
   }
 
   async function unsubscribe() {
-    await subscription?.unsubscribe()
-    setSubscription(null)
+    await notification?.unsubscribe()
+    setNotification(null)
     await fetch("/api/actions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -57,26 +57,26 @@ export function Notification() {
   }
 
   async function sendTest() {
-    if (!subscription) return
+    if (!notification) return
     const msg = prompt("通知テスト")
-    const subJson = JSON.parse(JSON.stringify(subscription))
+    const subJson = JSON.parse(JSON.stringify(notification))
     await fetch("/api/actions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "sendNotification", subscription: subJson, message: msg }),
+      body: JSON.stringify({ action: "sendNotification", notification: subJson, message: msg }),
     })
   }
 
   if (!isSpported) return
 
   return (
-    <div className="p-1 w-20 h-8 bg-indigo-100 rounded-3xl flex justify-between items-center">
+    <div className="m-2 p-1 w-20 h-8 bg-indigo-100 rounded-3xl flex justify-between items-center">
       {/* 実装のonClickは sendTest❌ unsubscribe⭕️ */}
-      <div className="size-6 rounded-3xl bg-indigo-400 shadow-inner shadow-black flex justify-center items-center" onClick={() => subscription ? sendTest(): subscribe()}>
-        {subscription ? "🔔": "🔕"}
+      <div className="size-6 rounded-3xl bg-indigo-400 shadow-inner shadow-black flex justify-center items-center" onClick={() => notification ? sendTest(): subscribe()}>
+        {notification ? "🔔": "🔕"}
       </div>
       <div className="flex-1 text-center text-sm text-indigo-400 font-bold">
-        {subscription ? "ON": "OFF"}
+        {notification ? "ON": "OFF"}
       </div>
     </div>
   )

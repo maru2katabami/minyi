@@ -1,12 +1,14 @@
-import { MiniPlay } from "@/cmp/miniplay"
+import { MiniDisPlay } from "@/cmp/minidisplay"
 import { Notification } from "@/cmp/notification"
+import { Geolocation } from "@/cmp/geolocation"
 
 export default function Page() {
   return (
     <main>
-      <MiniPlay>
+      <MiniDisPlay>
         <Notification/>
-      </MiniPlay>
+        <Geolocation/>
+      </MiniDisPlay>
     </main>
   )
 }
