@@ -72,7 +72,7 @@ export function Notification() {
   return (
     <div className="m-2 p-1 w-20 h-8 bg-indigo-100 rounded-3xl flex justify-between items-center">
       {/* 実装のonClickは sendTest❌ unsubscribe⭕️ */}
-      <div className="size-6 rounded-3xl bg-indigo-400 shadow-inner shadow-black flex justify-center items-center" onClick={() => notification ? sendTest(): subscribe()}>
+      <div className={`size-6 rounded-3xl bg-indigo-400 ${notification ? "shadow-inner": "shadow"} shadow-black flex justify-center items-center`} onClick={() => notification ? sendTest(): subscribe()}>
         {notification ? "🔔": "🔕"}
       </div>
       <div className="flex-1 text-center text-sm text-indigo-400 font-bold">
