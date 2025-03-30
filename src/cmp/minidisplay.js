@@ -58,7 +58,7 @@ export function MiniDisPlay({children}) {
           onClick={handleClick}/>
       </>:
       <div
-        className="size-8 bg-[url(./favicon.ico)] bg-no-repeat bg-center bg-[size:70%]"
+        className="m-1 size-8 bg-[url(/minyi.png)] bg-no-repeat bg-center bg-[size:80%]"
         onClick={handleClick}/>
       }
     </div>
