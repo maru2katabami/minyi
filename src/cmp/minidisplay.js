@@ -22,56 +22,33 @@ export function MiniDisPlay({children}) {
   }
 
   const handleUp = (e) => {
-    ref.current.isDrag = false;
-    ref.current.style.transition =
-      "width 500ms, height 750ms, top 750ms, left 750ms, transform 750ms";
-  
-    // 現在のスタイル値を保持（条件に合致しなければ変更しない）
-    let newTop = ref.current.style.top;
-    let newLeft = ref.current.style.left;
-    let translateX = "0%";
-    let translateY = "0%";
-  
-    // 縦方向の条件: 上端20px以下、または下端20px以上（通常は innerHeight - 20px とするのが一般的）
-    if (e.clientY <= 20) {
-      newTop = "20px";
-      translateY = "0%";
-    } else if (e.clientY >= innerHeight - 20) {
-      newTop = "calc(100% - 20px)";
-      translateY = "-100%";
+    const current = ref.current
+    current.isDrag = false
+    current.style.transition = "width 500ms, height 750ms, top 750ms, left 750ms, transform 750ms"    
+    const rect = current.getBoundingClientRect()
+    const { innerHeight, innerWidth } = window   
+    const isOverlapping = rect.top < 20 || rect.bottom > innerHeight - 20 || rect.left < 20 || rect.right > innerWidth - 20
+    
+    if (rect.top < 20) {
+      current.style.top = "20px"
+    } else if (rect.bottom > innerHeight - 20) {
+      current.style.top = "calc(100% - 20px)"
     }
-  
-    // 横方向の条件: 左端20px以下、または右端20px以上（通常は innerWidth - 20px とするのが一般的）
-    if (e.clientX <= 20) {
-      newLeft = "20px";
-      translateX = "0%";
-    } else if (e.clientX >= innerWidth - 20) {
-      newLeft = "calc(100% - 20px)";
-      translateX = "-100%";
+    
+    if (rect.left < 20) {
+      current.style.left = "20px"
+    } else if (rect.right > innerWidth - 20) {
+      current.style.left = "calc(100% - 20px)"
     }
-  
-    // 条件に合致している場合のみスタイルを更新
-    if (e.clientY <= 20 || e.clientY >= innerHeight - 20) {
-      ref.current.style.top = newTop;
+    
+    if (isOverlapping) {
+      current.style.transform = `translate(${e.clientX > innerWidth / 2 ? "-100%" : "0%"}, ${e.clientY > innerHeight / 2 ? "-100%" : "0%"})`;
     }
-    if (e.clientX <= 20 || e.clientX >= innerWidth - 20) {
-      ref.current.style.left = newLeft;
-    }
+    
+    current.style.boxShadow = "0 2px 2px 0 #333"
+  }
   
-    // どちらかの条件に合致している場合、transform を更新
-    if (
-      e.clientY <= 20 ||
-      e.clientY >= innerHeight - 20 ||
-      e.clientX <= 20 ||
-      e.clientX >= innerWidth - 20
-    ) {
-      ref.current.style.transform = `translate(${translateX}, ${translateY})`;
-    }
   
-    ref.current.style.boxShadow = "0 2px 2px 0 #333";
-  };
-  
-
   const handleClick = e => {
     setIsOpen(!isOpen)
   }
