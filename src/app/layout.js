@@ -1,4 +1,5 @@
 import "./globals.css"
+import { NextAuthProvider } from "@/cmp/providers"
 
 export const metadata = {
   title: "MINYI",
@@ -9,7 +10,9 @@ export default function RootLayout({children}) {
   return (
     <html lang="en">
       <body>
-        {children}
+        <NextAuthProvider>
+          {children}
+        </NextAuthProvider>
       </body>
     </html>
   )

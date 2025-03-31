@@ -4,23 +4,24 @@ import { useState, useRef, useEffect } from "react"
 
 export function Geolocation() {
   const [geolocation, setGeolocation] = useState(false)
+  const [position, setPosition] = useState(null)
   const watchIdRef = useRef(null)
 
   const subscribe = () => {
     if ("geolocation" in navigator) {
-      const id = navigator.geolocation.watchPosition(
-        (position) => {
-          console.log("位置情報取得:", position.coords.latitude, position.coords.longitude)
-        },
-        (error) => {
-          console.error("位置情報取得エラー:", error)
-        },
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-      )
-      watchIdRef.current = id
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const { latitude, longitude } = pos.coords
+        setPosition({ latitude, longitude })
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data)
+          })
+          .catch((error) => {
+            console.error("Reverse geocoding failed: ", error)
+          })
+      })
       setGeolocation(true)
-    } else {
-      console.error("Geolocationはこのブラウザではサポートされていません")
     }
   }
 
@@ -47,7 +48,7 @@ export function Geolocation() {
         📌
       </div>
       <div className="flex-1 text-center text-sm text-indigo-400 font-bold">
-        {geolocation ? "ON" : "OFF"}
+        {geolocation ? "ON": "OFF"}
       </div>
     </div>
   )
